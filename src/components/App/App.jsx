@@ -6,6 +6,7 @@ import { refreshUser } from "../../redux/auth/operations"; // Виправлен
 import { selectIsRefreshing } from "../../redux/auth/selectors"; // Виправлено шлях
 import RestrictedRoute from "../RestrictedRoute"; // Виправлено шлях
 import PrivateRoute from "../PrivateRoute"; // Виправлено шлях
+import css from "./App.module.css";
 
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage"));
 const RegisterPage = lazy(() => import("../../pages/RegisterPage/RegisterPage"));
@@ -21,11 +22,12 @@ export default function App() {
   }, [dispatch]);
 
   return isRefreshing ? (
-    <p>Refreshing user please wait...</p>
-  ) : (
+    <div className={css.loader}></div> 
+  ) 
+  : (
     <Router> {/* Додаємо BrowserRouter тут */}
       <Layout>
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className={css.loader}></div>}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route

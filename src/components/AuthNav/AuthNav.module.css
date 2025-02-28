@@ -1,0 +1,20 @@
+.authNav {
+    display: flex;
+    gap: 20px;
+}
+
+.link {
+    padding: 12px 24px;
+    background: linear-gradient(90deg, #4d5ae5, #7a82ff);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.link:hover {
+    background: linear-gradient(90deg, #3c47c2, #5f6df5);
+    transform: translateY(-2px);
+}

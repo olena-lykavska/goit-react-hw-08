@@ -11,9 +11,6 @@ export default function Navigation() {
       <NavLink className={css.link} to="/"> {/* Головна сторінка */}
         Home
       </NavLink>
-      {/* <NavLink className={css.link} to="/phonebook">
-          Contacts
-        </NavLink> */}
       {isLoggedIn && ( // Якщо користувач увійшов, відображаємо лінк на Книгу контактів
         <NavLink className={css.link} to="/phonebook">
           Contacts

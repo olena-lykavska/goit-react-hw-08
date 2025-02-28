@@ -1,0 +1,30 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 20px;
+    background: #f5f5f5;
+    border-radius: 12px;
+}
+
+.username {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+button {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, #4d5ae5, #7a82ff);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+    font-weight: 600;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #3c47c2, #5f6df5);
+    transform: translateY(-2px);
+}

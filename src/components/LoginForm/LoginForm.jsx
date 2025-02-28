@@ -1,8 +1,9 @@
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useDispatch } from "react-redux";
 import { toast } from "react-hot-toast";
 import { login } from "../../redux/auth/operations";
 import css from "./LoginForm.module.css";
+import * as Yup from "yup";
 
 export default function LoginForm() {
   const dispatch = useDispatch();
@@ -11,16 +12,23 @@ export default function LoginForm() {
     dispatch(login(values))
       .unwrap()
       .then(response => {
-        console.log(response);
         toast.success("Logged in successfully!");
+        actions.resetForm();
       })
       .catch(error => {
-        console.log(error);
         toast.error("Login failed, please try again.");
       });
-
-    actions.resetForm();
   };
+
+  // Валідація форми
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("Invalid email address")
+      .required("Required"),
+    password: Yup.string()
+      .min(8, "Password must be at least 8 characters")
+      .required("Required"),
+  });
 
   return (
     <Formik
@@ -28,19 +36,30 @@ export default function LoginForm() {
         email: "",
         password: "",
       }}
+      validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      <Form className={css.form} autoComplete="off">
-        <label className={css.label}>
-          Email
-          <Field type="email" name="email" />
-        </label>
-        <label className={css.label}>
-          Password
-          <Field type="password" name="password" />
-        </label>
-        <button type="submit">Log In</button>
-      </Form>
+      {({ isSubmitting, isValid }) => (
+        <Form className={css.form} autoComplete="off">
+          <label className={css.label}>
+            Email
+            <Field type="email" name="email" className={css.input} />
+            <ErrorMessage name="email" component="div" className={css.error} />
+          </label>
+          <label className={css.label}>
+            Password
+            <Field type="password" name="password" className={css.input} />
+            <ErrorMessage name="password" component="div" className={css.error} />
+          </label>
+          <button
+            type="submit"
+            disabled={isSubmitting || !isValid}
+            className={css.button}
+          >
+            Log In
+          </button>
+        </Form>
+      )}
     </Formik>
   );
 }

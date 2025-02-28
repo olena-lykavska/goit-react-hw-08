@@ -1,4 +1,4 @@
- /* .item {
+ .item {
      display: flex;
      justify-content: space-between;
      align-items: center;
@@ -41,4 +41,4 @@
  .deleteButton:hover {
      background: #e54d4d;
      transform: scale(1.05);
- } */
+ }

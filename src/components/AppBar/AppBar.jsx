@@ -18,7 +18,7 @@ export default function AppBar() {
       
       {/* Якщо є фільтровані контакти, але користувач не авторизований */}
       {filteredContacts.length > 0 && !isLoggedIn && (
-        <div className={css.contactsMessage}>You have filtered contacts</div>
+        <div className={css.contactsMessage}>Please log in to view or manage your contacts.</div>
       )}
     </header>
   );

@@ -1,0 +1,71 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 64px;
+}
+
+.label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+input {
+    padding: 12px;
+    border: 2px solid #d6d8ff;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+    width: calc(100% - 20px);
+}
+
+input:focus {
+    border-color: #4d5ae5;
+    outline: none;
+}
+
+button {
+    padding: 12px 24px;
+    background: linear-gradient(90deg, #4d5ae5, #7a82ff);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    /* Прибираємо transform для блокування підскоку */
+    font-weight: 600;
+}
+
+button:hover {
+    background: linear-gradient(90deg, #3c47c2, #5f6df5);
+    transform: translateY(-2px);
+}
+
+/* Для заблокованої кнопки */
+button:disabled {
+    background: linear-gradient(90deg, #ccc, #d3d3d3);
+    /* Змінюємо фон на сірий */
+    color: #999;
+    /* Змінюємо колір тексту */
+    cursor: not-allowed;
+    /* Не дозволяємо натискати */
+    opacity: 0.5;
+    /* Зменшуємо прозорість */
+    transform: none;
+    /* Прибираємо підскок */
+}
+
+
+.error {
+    color: #e54d4d;
+    font-size: 14px;
+    font-weight: 600;
+}
