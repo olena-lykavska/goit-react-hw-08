@@ -1,0 +1,17 @@
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #4d5ae5;
+  margin-bottom: 24px;
+}
+
+.container {
+  min-width: 600px;
+  margin: 40px auto;
+  padding: 24px;
+  background: linear-gradient(135deg, #f9f9fb, #e3e5fc);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-family: "Inter", sans-serif;
+}
