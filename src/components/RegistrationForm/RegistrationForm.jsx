@@ -3,21 +3,22 @@ import { useDispatch } from "react-redux";
 import { register } from "../../redux/auth/operations";
 import css from "./RegistrationForm.module.css";
 import * as Yup from "yup";
+import { useState } from "react";
 
 export default function RegistrationForm() {
   const dispatch = useDispatch();
+  const [serverError, setServerError] = useState("");
 
-  const handleSubmit = (values, actions) => {
-    dispatch(register(values))
-      .then(() => {
-        actions.resetForm();
-      })
-      .catch(error => {
-        actions.setSubmitting(false); // Важливо зупинити кнопку при помилці
-        console.error("Registration error:", error);
-        // Можна додати повідомлення для користувача
-        alert("Registration failed: " + error.message); // Ви можете замінити це на кращий спосіб
-      });
+  const handleSubmit = async (values, actions) => {
+    setServerError(""); // Очищуємо попередні помилки перед новим запитом
+
+    try {
+      await dispatch(register(values)).unwrap();
+      actions.resetForm();
+    } catch (error) {
+      setServerError(error); // Записуємо помилку з бекенду
+      actions.setSubmitting(false);
+    }
   };
 
   const validationSchema = Yup.object({
@@ -41,15 +42,11 @@ export default function RegistrationForm() {
 
   return (
     <Formik
-      initialValues={{
-        name: "",
-        email: "",
-        password: "",
-      }}
+      initialValues={{ name: "", email: "", password: "" }}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ isValid, isSubmitting, errors }) => (
+      {({ isValid, isSubmitting }) => (
         <Form className={css.form} autoComplete="off">
           <label className={css.label}>
             Username
@@ -69,7 +66,7 @@ export default function RegistrationForm() {
             <ErrorMessage name="password" component="div" className={css.error} />
           </label>
 
-          {errors && <div className={css.error}>{errors.message}</div>} {/* Виведення загальних помилок */}
+          {serverError && <div className={css.error}>{serverError}</div>}
 
           <button
             type="submit"

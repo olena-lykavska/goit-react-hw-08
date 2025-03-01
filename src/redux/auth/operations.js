@@ -10,64 +10,77 @@ const setAuthHeader = (token) => {
   }
 };
 
-export const register = createAsyncThunk("auth/register", async (userInfo, thunkAPI) => {
-  try {
-    const response = await axios.post("/users/signup", userInfo);
-    setAuthHeader(response.data.token);
-    return response.data;
-  } catch (error) {
-    // Перевірка на помилку MongoDB (code 11000) для вже зареєстрованого емейла
-    if (error.response?.data?.code === 11000) {
-      return thunkAPI.rejectWithValue("Email already exists");
+const clearAuthHeader = () => {
+  localStorage.removeItem("token");
+  axios.defaults.headers.Authorization = "";
+};
+
+// **Реєстрація**
+export const register = createAsyncThunk(
+  "auth/register",
+  async (userInfo, thunkAPI) => {
+    try {
+      const response = await axios.post("/users/signup", userInfo);
+      setAuthHeader(response.data.token);
+
+      const refreshedUser = await thunkAPI.dispatch(refreshUser()).unwrap();
+      return refreshedUser;
+    } catch (error) {
+      if (error.response?.status === 400) {
+        return thunkAPI.rejectWithValue("Email already exists or invalid data");
+      }
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Registration failed");
     }
-    return thunkAPI.rejectWithValue(error.response?.data || error.message);
   }
-});
+);
 
-export const refreshUser = createAsyncThunk("auth/refreshUser", async (_, thunkAPI) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return thunkAPI.rejectWithValue("No token found");
-  }
+// **Оновлення користувача**
+export const refreshUser = createAsyncThunk(
+  "auth/refreshUser",
+  async (_, thunkAPI) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return thunkAPI.rejectWithValue("No token found");
+    }
 
-  try {
-    const { data } = await axios.get("/users/current", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
+    try {
+      const { data } = await axios.get("/users/current", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    } catch (error) {
+      clearAuthHeader();
+      return thunkAPI.rejectWithValue("Session expired, please log in again");
+    }
   }
-});
+);
 
-export const login = createAsyncThunk("auth/login", async (userData, thunkAPI) => {
-  try {
-    const { data } = await axios.post("/users/login", userData);
-    setAuthHeader(data.token);
-    return data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
-  }
-});
+// **Логін**
+export const login = createAsyncThunk(
+  "auth/login",
+  async (userData, thunkAPI) => {
+    try {
+      const { data } = await axios.post("/users/login", userData);
+      setAuthHeader(data.token);
 
-export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return thunkAPI.rejectWithValue("No token found for logout");
+      const refreshedUser = await thunkAPI.dispatch(refreshUser()).unwrap();
+      return refreshedUser;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Invalid email or password");
+    }
   }
+);
 
-  try {
-    await axios.post("/users/logout", {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    localStorage.removeItem("token");
-    axios.defaults.headers.Authorization = '';
-    return null;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.message);
+// **Логаут**
+export const logout = createAsyncThunk(
+  "auth/logout",
+  async (_, thunkAPI) => {
+    try {
+      await axios.post("/users/logout");
+      clearAuthHeader();
+      return null;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Logout failed");
+    }
   }
-});
+);
