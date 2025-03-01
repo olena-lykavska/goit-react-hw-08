@@ -1,9 +1,10 @@
-import PageTitle from "../../components/PageTitle/PageTitle";
-import css from './HomePage.module.css';
+import PageTitle from "../../components/PageTitle/PageTitle";  // Імпортуємо компонент заголовка
+import css from './HomePage.module.css';  // Імпортуємо стилі для цієї сторінки
 
 export default function HomePage() {
   return (
     <div className={css.container}>
+      {/* Заголовок на сторінці з емодзі */}
       <PageTitle className={css.pageTitle}>
         Welcome{" "}
         <span role="img" aria-label="Greeting icon" className={css.emoji}>
@@ -11,10 +12,12 @@ export default function HomePage() {
         </span>
       </PageTitle>
 
+      {/* Контейнер з фотографією */}
       <div className={css.profileContainer}>
         <img src="/images/olena-photo.jpg" alt="Olena's photo" className={css.profileImage} />
       </div>
-      
+
+      {/* Розділи з текстом */}
       <section className={css.section}>
         <p>
           My name is Olena, and this is my final project in React. This application

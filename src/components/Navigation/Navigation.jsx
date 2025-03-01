@@ -1,17 +1,19 @@
-import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectIsLoggedIn } from "../../redux/auth/selectors"; // Селектор для перевірки авторизації
-import css from "./Navigation.module.css"; // Імпортуємо стилі для навігації
+import { NavLink } from "react-router-dom";  // Імпортуємо компонент NavLink для навігації
+import { useSelector } from "react-redux";  // Імпортуємо хук useSelector для доступу до стану Redux
+import { selectIsLoggedIn } from "../../redux/auth/selectors";  // Селектор для перевірки статусу авторизації
+import css from "./Navigation.module.css";  // Імпортуємо стилі для навігації
 
 export default function Navigation() {
-  const isLoggedIn = useSelector(selectIsLoggedIn); // Отримуємо стан авторизації
+  const isLoggedIn = useSelector(selectIsLoggedIn);  // Отримуємо статус авторизації з Redux
 
   return (
     <nav>
-      <NavLink className={css.link} to="/"> {/* Головна сторінка */}
+      {/* Лінк на головну сторінку */}
+      <NavLink className={css.link} to="/">
         Home
       </NavLink>
-      {isLoggedIn && ( // Якщо користувач увійшов, відображаємо лінк на Книгу контактів
+      {/* Якщо користувач увійшов, показуємо лінк на Книгу контактів */}
+      {isLoggedIn && (
         <NavLink className={css.link} to="/phonebook">
           Contacts
         </NavLink>

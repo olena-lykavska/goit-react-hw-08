@@ -42,6 +42,12 @@
     color: #4d5ae5;
     animation: rotate 1.5s infinite linear;
 }
+.noContacts {
+    text-align: center;
+    color: gray;
+    font-size: 18px;
+    margin-top: 20px;
+}
 
 @keyframes rotate {
     0% {

@@ -1,26 +1,27 @@
 import React from "react";
-import toast from "react-hot-toast";
-import css from "./ContactItem.module.css";
+import toast from "react-hot-toast"; // Підключаємо бібліотеку для сповіщень
+import css from "./ContactItem.module.css"; // Імпортуємо стилі
 
 const ContactItem = ({ contact, onDelete }) => {
+  // Функція для видалення контакту
   const handleDelete = () => {
     const confirmed = window.confirm(
       `Are you sure you want to delete the contact: ${contact.name}?`
-    );
+    ); // Підтвердження видалення контакту
     if (confirmed) {
-      onDelete();
-      toast.success(`Contact ${contact.name} deleted successfully!`);
+      onDelete(); // Викликаємо передану функцію видалення
+      toast.success(`Contact ${contact.name} deleted successfully!`); // Відображаємо повідомлення про успішне видалення
     }
   };
 
   return (
-    <li className={css.item}>
-      <div className={css.contactInfo}>
+    <li className={css.item}> {/* Контейнер для елемента списку */}
+      <div className={css.contactInfo}> {/* Блок з інформацією про контакт */}
         <span className={css.contactName}>{contact.name}</span>:{" "}
         <span className={css.contactNumber}>{contact.number}</span>
       </div>
       <button onClick={handleDelete} className={css.deleteButton}>
-        Delete
+        Delete {/* Кнопка видалення контакту */}
       </button>
     </li>
   );

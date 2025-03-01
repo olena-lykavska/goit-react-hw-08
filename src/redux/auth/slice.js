@@ -1,59 +1,78 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { login, logout, refreshUser } from "./operations";
 
+// Створення слайсу для автентифікації
 const authSlice = createSlice({
-  name: "auth",
+  name: "auth",  // Назва слайсу
   initialState: {
-    user: null,
-    error: null,
-    loading: false,
-    isRefreshing: false,
-    isLoggedIn: false,
+    // Початковий стан
+    user: {
+      name: null,  // Ім'я користувача (спочатку немає)
+      email: null, // Email користувача (спочатку немає)
+    },
+    token: null,      // Токен авторизації (спочатку немає)
+    error: null,      // Повідомлення про помилку (спочатку немає)
+    loading: false,   // Стан завантаження (спочатку false)
+    isRefreshing: false,  // Стан оновлення даних користувача (спочатку false)
+    isLoggedIn: false,    // Чи користувач авторизований (спочатку false)
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Логіка для входу (login)
       .addCase(login.pending, (state) => {
-        state.loading = true;
+        state.loading = true;  // Поки йде запит на логін, ставимо loading в true
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoggedIn = true;
-        state.loading = false;
-        state.error = null;
+        // Якщо логін успішний
+        state.user = { name: action.payload.name, email: action.payload.email };  // Оновлюємо інформацію про користувача
+        state.token = action.payload.token;  // Зберігаємо токен
+        state.isLoggedIn = true;  // Користувач залогінений
+        state.loading = false;  // Завантаження завершено
+        state.error = null;  // Очищаємо помилку
       })
       .addCase(login.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        // Якщо логін не вдалося виконати
+        state.loading = false;  // Завантаження завершено
+        state.error = action.payload;  // Зберігаємо помилку
       })
+      
+      // Логіка для виходу (logout)
       .addCase(logout.pending, (state) => {
-        state.loading = true;
+        state.loading = true;  // Поки йде запит на логаут, ставимо loading в true
       })
       .addCase(logout.fulfilled, (state) => {
-        state.user = null;
-        state.isLoggedIn = false;
-        state.loading = false;
-        state.error = null;
+        // Якщо логаут успішний
+        state.user = { name: null, email: null };  // Очищаємо інформацію про користувача
+        state.token = null;  // Очищаємо токен
+        state.isLoggedIn = false;  // Користувач вийшов
+        state.loading = false;  // Завантаження завершено
+        state.error = null;  // Очищаємо помилку
       })
       .addCase(logout.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+        // Якщо логаут не вдалося виконати
+        state.loading = false;  // Завантаження завершено
+        state.error = action.payload;  // Зберігаємо помилку
       })
+      
+      // Логіка для оновлення користувача (refreshUser)
       .addCase(refreshUser.pending, (state) => {
-        state.isRefreshing = true;
+        state.isRefreshing = true;  // Поки йде запит на оновлення даних, ставимо isRefreshing в true
       })
       .addCase(refreshUser.fulfilled, (state, action) => {
-        state.user = action.payload;
-        state.isLoggedIn = true;
-        state.isRefreshing = false;
-        state.error = null;
+        // Якщо оновлення успішне
+        state.user = { name: action.payload.name, email: action.payload.email };  // Оновлюємо інформацію про користувача
+        state.token = action.payload.token;  // Зберігаємо токен
+        state.isLoggedIn = true;  // Користувач залогінений
+        state.isRefreshing = false;  // Оновлення завершено
+        state.error = null;  // Очищаємо помилку
       })
       .addCase(refreshUser.rejected, (state, action) => {
-        state.isRefreshing = false;
-        state.error = action.payload;
+        // Якщо оновлення не вдалося
+        state.isRefreshing = false;  // Оновлення завершено
+        state.error = action.payload;  // Зберігаємо помилку
       });
   },
 });
 
-// Якщо ви хочете експортувати редуктор за замовчуванням:
 export default authSlice.reducer;

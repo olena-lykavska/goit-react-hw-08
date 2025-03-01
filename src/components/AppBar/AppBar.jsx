@@ -1,22 +1,23 @@
-// src/components/AppBar/AppBar.jsx
-import { useSelector } from "react-redux";
-import Navigation from "../Navigation/Navigation";
-import UserMenu from "../UserMenu/UserMenu";
-import AuthNav from "../AuthNav/AuthNav";
-import { selectIsLoggedIn } from "../../redux/auth/selectors";
-import { selectFilteredContacts } from "../../redux/contacts/selectors";
-import css from "./AppBar.module.css";
+import { useSelector } from "react-redux"; // Імпортуємо useSelector для доступу до стану Redux
+import Navigation from "../Navigation/Navigation"; // Імпортуємо компонент навігації
+import UserMenu from "../UserMenu/UserMenu"; // Імпортуємо меню користувача
+import AuthNav from "../AuthNav/AuthNav"; // Імпортуємо меню для аутентифікації
+import { selectIsLoggedIn } from "../../redux/auth/selectors"; // Імпортуємо селектор для перевірки статусу авторизації
+import { selectFilteredContacts } from "../../redux/contacts/selectors"; // Імпортуємо селектор для отримання фільтрованих контактів
+import css from "./AppBar.module.css"; // Імпортуємо стилі для AppBar
 
 export default function AppBar() {
-  const isLoggedIn = useSelector(selectIsLoggedIn); // Перевірка статусу аутентифікації
-  const filteredContacts = useSelector(selectFilteredContacts); // Отримуємо фільтровані контакти
+  const isLoggedIn = useSelector(selectIsLoggedIn); // Отримуємо статус авторизації з Redux
+  const filteredContacts = useSelector(selectFilteredContacts); // Отримуємо фільтровані контакти з Redux
 
   return (
     <header className={css.header}>
-      <Navigation />
-      {isLoggedIn ? <UserMenu /> : <AuthNav />} {/* Меню залежно від авторизації */}
+      <Navigation /> {/* Виводимо компонент навігації */}
       
-      {/* Якщо є фільтровані контакти, але користувач не авторизований */}
+      {/* В залежності від статусу авторизації відображаємо меню користувача або меню для аутентифікації */}
+      {isLoggedIn ? <UserMenu /> : <AuthNav />}
+      
+      {/* Якщо є фільтровані контакти і користувач не авторизований, показуємо повідомлення */}
       {filteredContacts.length > 0 && !isLoggedIn && (
         <div className={css.contactsMessage}>Please log in to view or manage your contacts.</div>
       )}
