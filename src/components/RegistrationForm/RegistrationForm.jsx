@@ -49,26 +49,26 @@ export default function RegistrationForm() {
       onSubmit={handleSubmit}  // Вказуємо функцію, яка буде викликана при відправці форми
     >
       {({ isValid, isSubmitting }) => (
-        <Form className={css.form} autoComplete="off">  // Створюємо форму
+        <Form className={css.form} autoComplete="off">  
           {/* Поле для введення імені */}
           <label className={css.label}>
             Username
-            <Field type="text" name="name" className={css.input} />  // Поле для імені
-            <ErrorMessage name="name" component="div" className={css.error} />  // Показуємо помилку для імені
+            <Field type="text" name="name" className={css.input} />  
+            <ErrorMessage name="name" component="div" className={css.error} />  
           </label>
 
           {/* Поле для введення email */}
           <label className={css.label}>
             Email
-            <Field type="email" name="email" className={css.input} />  // Поле для email
-            <ErrorMessage name="email" component="div" className={css.error} />  // Показуємо помилку для email
+            <Field type="email" name="email" className={css.input} />  
+            <ErrorMessage name="email" component="div" className={css.error} />  
           </label>
 
           {/* Поле для введення пароля */}
           <label className={css.label}>
             Password
-            <Field type="password" name="password" className={css.input} />  // Поле для пароля
-            <ErrorMessage name="password" component="div" className={css.error} />  // Показуємо помилку для пароля
+            <Field type="password" name="password" className={css.input} />  
+            <ErrorMessage name="password" component="div" className={css.error} />  
           </label>
 
           {/* Виводимо помилку сервера, якщо вона є */}

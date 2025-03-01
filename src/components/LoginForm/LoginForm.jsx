@@ -47,13 +47,13 @@ export default function LoginForm() {
         <Form className={css.form} autoComplete="off">
           <label className={css.label}>
             Email
-            <Field type="email" name="email" className={css.input} />  // Поле для email
-            <ErrorMessage name="email" component="div" className={css.error} />  // Виведення помилки, якщо є
+            <Field type="email" name="email" className={css.input} />  
+            <ErrorMessage name="email" component="div" className={css.error} />  
           </label>
           <label className={css.label}>
             Password
-            <Field type="password" name="password" className={css.input} />  // Поле для пароля
-            <ErrorMessage name="password" component="div" className={css.error} />  // Виведення помилки, якщо є
+            <Field type="password" name="password" className={css.input} />  
+            <ErrorMessage name="password" component="div" className={css.error} />  
           </label>
           <button
             type="submit"
