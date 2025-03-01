@@ -13,11 +13,13 @@ export default function RegistrationForm() {
         actions.resetForm();
       })
       .catch(error => {
-        console.error(error);
+        actions.setSubmitting(false); // Важливо зупинити кнопку при помилці
+        console.error("Registration error:", error);
+        // Можна додати повідомлення для користувача
+        alert("Registration failed: " + error.message); // Ви можете замінити це на кращий спосіб
       });
   };
 
-  // Валідація форми
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(3, "Username is too short")
@@ -47,42 +49,32 @@ export default function RegistrationForm() {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ isValid, isSubmitting }) => (
+      {({ isValid, isSubmitting, errors }) => (
         <Form className={css.form} autoComplete="off">
           <label className={css.label}>
             Username
             <Field type="text" name="name" className={css.input} />
-            <ErrorMessage 
-              name="name" 
-              component="div" 
-              className={css.error} 
-            />
+            <ErrorMessage name="name" component="div" className={css.error} />
           </label>
 
           <label className={css.label}>
             Email
             <Field type="email" name="email" className={css.input} />
-            <ErrorMessage 
-              name="email" 
-              component="div" 
-              className={css.error} 
-            />
+            <ErrorMessage name="email" component="div" className={css.error} />
           </label>
 
           <label className={css.label}>
             Password
             <Field type="password" name="password" className={css.input} />
-            <ErrorMessage 
-              name="password" 
-              component="div" 
-              className={css.error} 
-            />
+            <ErrorMessage name="password" component="div" className={css.error} />
           </label>
+
+          {errors && <div className={css.error}>{errors.message}</div>} {/* Виведення загальних помилок */}
 
           <button
             type="submit"
             className={css.button}
-            disabled={isSubmitting || !isValid} // Кнопка неактивна, поки форма не валідна
+            disabled={isSubmitting || !isValid}
           >
             Register
           </button>

@@ -7,15 +7,17 @@
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 64px;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 .label {
     display: flex;
     flex-direction: column;
-    gap: 8px;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
     color: #333;
+    gap: 8px;
 }
 
 input {

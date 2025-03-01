@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { nanoid } from "nanoid";
 import * as Yup from "yup";
+import toast from "react-hot-toast"; // Додаємо тости
 import css from "./ContactForm.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addContact } from "../../redux/contacts/operations";
@@ -30,40 +31,37 @@ const ContactForm = () => {
       validationSchema={validationSchema}
       onSubmit={(values, { resetForm }) => {
         const contact = { id: nanoid(), ...values };
-        dispatch(addContact(contact)); // Виклик додавання контакту
-        resetForm(); // Очищаємо форму після відправки
+        dispatch(addContact(contact))
+          .unwrap() // Очікуємо завершення `addContact`
+          .then(() => {
+            toast.success(`Contact ${values.name} added successfully!`);
+            resetForm();
+          })
+          .catch(() => {
+            toast.error("Failed to add contact. Please try again.");
+          });
       }}
     >
-      <Form className={css.form}>
-        <div className={css.formGroup}>
-          <label htmlFor="name">Name:</label>
-          <Field
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            className={css.input}
-          />
-          <ErrorMessage className={css.error} name="name" component="div" />
-        </div>
+      {({ isValid, dirty }) => (
+        <Form className={css.form}>
+          <div className={css.formGroup}>
+            <label className={css.label} htmlFor="name">Name:</label>
+            <Field id="name" name="name" type="text" autoComplete="name" className={css.input} />
+            <ErrorMessage className={css.error} name="name" component="div" />
+          </div>
 
-        <div className={css.formGroup}>
-          <label htmlFor="number">Number:</label>
-          <Field
-            id="number"
-            name="number"
-            type="text"
-            autoComplete="tel"
-            className={css.input}
-          />
-          <ErrorMessage className={css.error} name="number" component="div" />
-        </div>
+          <div className={css.formGroup}>
+            <label className={css.label} htmlFor="number">Number:</label>
+            <Field id="number" name="number" type="text" autoComplete="tel" className={css.input} />
+            <ErrorMessage className={css.error} name="number" component="div" />
+          </div>
 
-        <button type="submit" className={css.button} disabled={loading}>
-          {loading ? "Adding..." : "Add Contact"}
-        </button>
-        {loading && <div className={css.loader}></div>}
-      </Form>
+          <button type="submit" className={css.button} disabled={loading || !isValid || !dirty}>
+            {loading ? "Adding..." : "Add Contact"}
+          </button>
+          {loading && <div className={css.loader}></div>}
+        </Form>
+      )}
     </Formik>
   );
 };

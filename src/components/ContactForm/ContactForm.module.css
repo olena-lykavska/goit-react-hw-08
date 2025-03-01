@@ -31,6 +31,15 @@
     outline: none;
 }
 
+.label {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    gap: 8px;
+}
+
 .button {
     padding: 12px 24px;
     background: linear-gradient(90deg, #4d5ae5, #7a82ff);
@@ -45,6 +54,19 @@
 .button:hover {
     background: linear-gradient(90deg, #3c47c2, #5f6df5);
     transform: translateY(-2px);
+}
+
+.button:disabled {
+    background: linear-gradient(90deg, #ccc, #d3d3d3);
+    /* Змінюємо фон на сірий */
+    color: #999;
+    /* Змінюємо колір тексту */
+    cursor: not-allowed;
+    /* Не дозволяємо натискати */
+    opacity: 0.5;
+    /* Зменшуємо прозорість */
+    transform: none;
+    /* Прибираємо підскок */
 }
 
 .error {
