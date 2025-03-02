@@ -14,7 +14,7 @@ export default function Navigation() {
       </NavLink>
       {/* Якщо користувач увійшов, показуємо лінк на Книгу контактів */}
       {isLoggedIn && (
-        <NavLink className={css.link} to="/phonebook">
+        <NavLink className={css.link} to="/contacts">
           Contacts
         </NavLink>
       )}

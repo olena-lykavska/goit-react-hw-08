@@ -87,16 +87,30 @@ export const login = createAsyncThunk(
 );
 
 // **Логаут користувача**
-// Ця операція здійснює вихід користувача з системи
 export const logout = createAsyncThunk(
   "auth/logout",
   async (_, thunkAPI) => {
+    // Отримуємо токен з localStorage
+    const token = localStorage.getItem("token");
+
+    // Якщо токен відсутній, відмовляємо в запиті
+    if (!token) {
+      return thunkAPI.rejectWithValue("No token found for logout");
+    }
+
+    // Додаємо токен до заголовка Authorization
+    axios.defaults.headers.Authorization = `Bearer ${token}`;
+
     try {
-      await axios.post("/users/logout"); // Відправляємо запит на вихід
-      clearAuthHeader(); // Очищаємо токен після виходу
-      return null; // Повертаємо null після успішного виходу
+      // Виконуємо запит на логаут
+      const response = await axios.post("/users/logout");
+
+      // Очищаємо токен після виходу
+      clearAuthHeader();
+
+      return null;
     } catch (error) {
-      // Обробка помилок при виході
+      // Логування помилки, якщо запит на логаут не вдалося виконати
       return thunkAPI.rejectWithValue("Logout failed");
     }
   }

@@ -1,64 +1,57 @@
-import { lazy, Suspense, useEffect } from "react";
-import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
-import Layout from "../Layout/Layout"; // Імпорт Layout для загальної структури
-import { useDispatch, useSelector } from "react-redux";
-import { refreshUser } from "../../redux/auth/operations"; // Імпорт операції для оновлення користувача
-import { selectIsRefreshing } from "../../redux/auth/selectors"; // Імпорт селектора для перевірки стану оновлення користувача
-import RestrictedRoute from "../RestrictedRoute"; // Обмежений маршрут для незалогінених користувачів
-import PrivateRoute from "../PrivateRoute"; // Приватний маршрут для залогінених користувачів
-import { PersistGate } from "redux-persist/integration/react"; // Імпорт PersistGate для роботи з redux-persist
-import { persistor } from "../../redux/store"; // Імпорт persistor, який відповідає за інтеграцію з redux-persist
-import css from "./App.module.css"; // Імпорт стилів
+import { lazy, Suspense, useEffect } from "react"; // Імпорт функцій для лінивого завантаження та обробки асинхронних компонентів
+import { Route, Routes } from "react-router-dom"; // Імпорт для роботи з маршрутами та рендерингом компонентів
+import Layout from "../Layout/Layout"; // Імпорт компонента Layout, який визначає загальну структуру сторінки
+import { useDispatch, useSelector } from "react-redux"; // Імпорт хуків для роботи з Redux
+import { refreshUser } from "../../redux/auth/operations"; // Імпорт дії для оновлення користувача
+import { selectIsRefreshing } from "../../redux/auth/selectors"; // Імпорт селектора для перевірки стану оновлення
+import RestrictedRoute from "../RestrictedRoute"; // Імпорт компонента для обмежених маршрутів
+import PrivateRoute from "../PrivateRoute"; // Імпорт компонента для приватних маршрутів
+import css from "./App.module.css"; // Імпорт стилів для компонента App
 
-// Ліниве завантаження сторінок для покращення продуктивності
+// Ліниве завантаження сторінок (вони будуть завантажуватися тільки при необхідності)
 const HomePage = lazy(() => import("../../pages/HomePage/HomePage"));
 const RegisterPage = lazy(() => import("../../pages/RegisterPage/RegisterPage"));
 const LoginPage = lazy(() => import("../../pages/LoginPage/LoginPage"));
 const PhonebookPage = lazy(() => import("../../pages/PhonebookPage/PhonebookPage"));
 
 export default function App() {
-  const dispatch = useDispatch();
-  const isRefreshing = useSelector(selectIsRefreshing); // Отримуємо стан оновлення користувача
+  const dispatch = useDispatch(); // Ініціалізація dispatch для відправки дій у Redux
+  const isRefreshing = useSelector(selectIsRefreshing); // Отримання стану оновлення користувача з Redux
 
-  // Викликаємо refreshUser при завантаженні компоненту, щоб отримати актуальну інформацію про користувача
+  // Виконання запиту на оновлення користувача при завантаженні додатку
   useEffect(() => {
     dispatch(refreshUser());
-  }, [dispatch]);
+  }, [dispatch]); // Запуск тільки при зміні dispatch
 
+  // Якщо відбувається оновлення користувача, показуємо лоадер
   return isRefreshing ? (
-    // Показуємо лоадер під час оновлення інформації про користувача
-    <div className={css.loader}></div>
+    <div className={css.loader}></div> // Показуємо індикатор завантаження, поки оновлюється користувач
   ) : (
-    // Якщо дані оновлено, обгортаємо додаток у PersistGate для синхронізації з redux-persist
-    <PersistGate loading={<div className={css.loader}></div>} persistor={persistor}> 
-      <Router>
-        <Layout>
-          <Suspense fallback={<div className={css.loader}></div>}>
-            {/* Оголошуємо маршрути додатка */}
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route
-                path="/register"
-                element={
-                  <RestrictedRoute component={<RegisterPage />} redirectTo="/" />
-                }
-              />
-              <Route
-                path="/login"
-                element={
-                  <RestrictedRoute component={<LoginPage />} redirectTo="/phonebook" />
-                }
-              />
-              <Route
-                path="/phonebook"
-                element={
-                  <PrivateRoute component={<PhonebookPage />} redirectTo="/login" />
-                }
-              />
-            </Routes>
-          </Suspense>
-        </Layout>
-      </Router>
-    </PersistGate> // Завершуємо обгортку PersistGate
+    // Основна структура додатку
+    <Layout>
+      {/* Використовуємо Suspense для лінивого завантаження сторінок */}
+      <Suspense fallback={<div className={css.loader}></div>}> {/* Показуємо лоадер під час завантаження компонентів */}
+        <Routes>
+          {/* Маршрут для домашньої сторінки */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* Маршрути для сторінок реєстрації та входу з обмеженням доступу */}
+          <Route
+            path="/register"
+            element={<RestrictedRoute component={<RegisterPage />} redirectTo="/" />}
+          />
+          <Route
+            path="/login"
+            element={<RestrictedRoute component={<LoginPage />} redirectTo="/contacts" />}
+          />
+          
+          {/* Приватний маршрут для сторінки телефонної книги */}
+          <Route
+            path="/contacts"
+            element={<PrivateRoute component={<PhonebookPage />} redirectTo="/login" />}
+          />
+        </Routes>
+      </Suspense>
+    </Layout>
   );
 }
