@@ -1,116 +1,92 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-// Встановлюємо базовий URL для всіх запитів до API
+// Встановлюємо базову URL-адресу для всіх запитів
 axios.defaults.baseURL = "https://connections-api.goit.global";
 
-// **Функція для встановлення токена в заголовок**
-// Якщо токен існує, ми його зберігаємо в localStorage і додаємо до заголовка запиту
+// **Функція для встановлення токена в заголовок авторизації**
+// Якщо токен існує, він зберігається в localStorage і додається до заголовка запиту
 const setAuthHeader = (token) => {
   if (token) {
-    localStorage.setItem("token", token); // Зберігаємо токен у localStorage
-    axios.defaults.headers.Authorization = `Bearer ${token}`; // Додаємо токен до заголовка авторизації
+    localStorage.setItem("token", token);
+    axios.defaults.headers.Authorization = `Bearer ${token}`;
   }
 };
 
-// **Функція для очищення заголовка авторизації**
-// Видаляємо токен з localStorage та очищуємо заголовок
+// **Функція для очищення токена**
+// Видаляємо токен з localStorage та прибираємо його з заголовка авторизації
 const clearAuthHeader = () => {
-  localStorage.removeItem("token"); // Видаляємо токен з localStorage
-  axios.defaults.headers.Authorization = ""; // Очищаємо заголовок авторизації
+  localStorage.removeItem("token");
+  delete axios.defaults.headers.Authorization;
 };
 
 // **Реєстрація користувача**
-// Ця асинхронна операція реєструє нового користувача, отримує токен і оновлює користувача
+// Створює нового користувача, отримує токен, оновлює дані про нього
 export const register = createAsyncThunk(
   "auth/register",
   async (userInfo, thunkAPI) => {
     try {
-      const response = await axios.post("/users/signup", userInfo); // Відправка запиту на реєстрацію
-      setAuthHeader(response.data.token); // Встановлюємо токен в заголовок після успішної реєстрації
-
-      // Оновлюємо інформацію про користувача після реєстрації
+      const response = await axios.post("/users/signup", userInfo);
+      setAuthHeader(response.data.token);
       const refreshedUser = await thunkAPI.dispatch(refreshUser()).unwrap();
       return refreshedUser;
     } catch (error) {
-      // Обробка помилки, якщо статус 400 (неправні дані або вже існуючий email)
       if (error.response?.status === 400) {
         return thunkAPI.rejectWithValue("Email already exists or invalid data");
       }
-      // Відправляємо повідомлення про загальну помилку реєстрації
       return thunkAPI.rejectWithValue(error.response?.data?.message || "Registration failed");
     }
   }
 );
 
 // **Оновлення користувача**
-// Ця операція отримує актуальні дані про користувача з сервера, використовуючи токен
+// Отримує актуальні дані користувача, якщо є збережений токен
 export const refreshUser = createAsyncThunk(
   "auth/refreshUser",
   async (_, thunkAPI) => {
-    const token = localStorage.getItem("token"); // Отримуємо токен з localStorage
+    const token = localStorage.getItem("token");
     if (!token) {
-      return thunkAPI.rejectWithValue("No token found"); // Якщо токен не знайдено, повертаємо помилку
+      return thunkAPI.rejectWithValue("No token found");
     }
 
+    setAuthHeader(token); // Використовуємо setAuthHeader, щоб задати токен глобально
+
     try {
-      const { data } = await axios.get("/users/current", {
-        headers: { Authorization: `Bearer ${token}` }, // Відправляємо токен для авторизації
-      });
-      return data; // Повертаємо актуальні дані користувача
+      const { data } = await axios.get("/users/current");
+      return data;
     } catch (error) {
-      // Якщо сталася помилка (наприклад, токен більше не дійсний), очищуємо заголовок авторизації
       clearAuthHeader();
-      // Повідомляємо про помилку, якщо сесія завершена або токен недійсний
       return thunkAPI.rejectWithValue(error.response?.data?.message || "Session expired, please log in again");
     }
   }
 );
 
 // **Логін користувача**
-// Ця операція здійснює логін, отримує токен і оновлює інформацію про користувача
+// Виконує вхід користувача, отримує токен та оновлює його дані
 export const login = createAsyncThunk(
   "auth/login",
   async (userData, thunkAPI) => {
     try {
-      const { data } = await axios.post("/users/login", userData); // Відправляємо дані для логіну
-      setAuthHeader(data.token); // Встановлюємо токен в заголовок після успішного логіну
-
-      // Оновлюємо інформацію про користувача після логіну
+      const { data } = await axios.post("/users/login", userData);
+      setAuthHeader(data.token);
       const refreshedUser = await thunkAPI.dispatch(refreshUser()).unwrap();
       return refreshedUser;
     } catch (error) {
-      // Обробка помилок для невірних email чи паролів
       return thunkAPI.rejectWithValue("Invalid email or password");
     }
   }
 );
 
 // **Логаут користувача**
+// Вихід з акаунта, очищення токена
 export const logout = createAsyncThunk(
   "auth/logout",
   async (_, thunkAPI) => {
-    // Отримуємо токен з localStorage
-    const token = localStorage.getItem("token");
-
-    // Якщо токен відсутній, відмовляємо в запиті
-    if (!token) {
-      return thunkAPI.rejectWithValue("No token found for logout");
-    }
-
-    // Додаємо токен до заголовка Authorization
-    axios.defaults.headers.Authorization = `Bearer ${token}`;
-
     try {
-      // Виконуємо запит на логаут
-      const response = await axios.post("/users/logout");
-
-      // Очищаємо токен після виходу
+      await axios.post("/users/logout");
       clearAuthHeader();
-
       return null;
     } catch (error) {
-      // Логування помилки, якщо запит на логаут не вдалося виконати
       return thunkAPI.rejectWithValue("Logout failed");
     }
   }

@@ -38,7 +38,7 @@ export default function App() {
           {/* Маршрути для сторінок реєстрації та входу з обмеженням доступу */}
           <Route
             path="/register"
-            element={<RestrictedRoute component={<RegisterPage />} redirectTo="/" />}
+            element={<RestrictedRoute component={<RegisterPage />} redirectTo="/login" />}
           />
           <Route
             path="/login"
